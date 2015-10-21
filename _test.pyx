@@ -1,7 +1,7 @@
 
 # distutils: language = c++
 
-from pytestclass import PyTestClass
+from testclass import PyTestClass
 from testclass cimport TestClass
 
 
