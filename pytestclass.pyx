@@ -1,6 +1,5 @@
 
 # distutils: language = c++
-# distutils: sources = testclass.cpp
 
 
 from testclass cimport TestClass

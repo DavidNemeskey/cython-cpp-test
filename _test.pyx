@@ -1,6 +1,5 @@
 
 # distutils: language = c++
-# distutils: sources = testclass.cpp
 
 from pytestclass import PyTestClass
 from testclass cimport TestClass
