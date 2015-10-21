@@ -3,7 +3,7 @@
 # the C++ declarations. Using a .pxd file also allows
 # us to reuse the declaration in multiple .pyx modules.
 
-cdef extern from "testclass.h":
+cdef extern from "testclass_.h":
 
     cppclass TestClass:
         int x,y
