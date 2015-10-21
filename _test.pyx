@@ -1,8 +1,8 @@
 
 # distutils: language = c++
 
-from pytestclass import PyTestClass
-from testclass cimport TestClass
+from pytestclass import TestClass
+from testclass cimport TestClass as TestClass_
 
 
 def test_the_cppclass():
@@ -17,9 +17,9 @@ def test_the_cppclass():
     reason RAII is the preferred style in C++.
     """
    
-    cdef TestClass *T
+    cdef TestClass_ *T
     
-    T = new TestClass() # might raise MemoryError
+    T = new TestClass_() # might raise MemoryError
    
     # the MemoryError must be raised outside the 
     # try-finally block where we actually do something
@@ -40,7 +40,7 @@ def test_memory_leak():
     del is not called on the C++ object. That is, Cython does
     not help us with garbage collection of C++ classes.
     """
-    cdef TestClass *T = new TestClass()
+    cdef TestClass_ *T = new TestClass_()
         
         
 def test_the_wrapped_class():
@@ -53,7 +53,7 @@ def test_the_wrapped_class():
     cycle object destruction will not happen deterministically 
     even with the current CPython.
     """
-    T = PyTestClass()
+    T = TestClass()
     T.x = 15
     print(T.x)
     T = None
@@ -69,7 +69,7 @@ def test_as_context_manager():
     controlled.
     """
     
-    with PyTestClass() as T:
+    with TestClass() as T:
         T.x = 15
         print(T.x)
 
@@ -84,16 +84,16 @@ def test_with_raii():
     memory leaks.
     """
     
-    # Cython does not support "cdef TestClass T()" so it 
+    # Cython does not support "cdef TestClass_ T()" so it 
     # is not possible to pass arguments to the constructor
-    cdef TestClass T   
+    cdef TestClass_ T   
     
     # We can also use a pointer
-    cdef TestClass *pT = &T
+    cdef TestClass_ *pT = &T
     
     ## Cython generates invalid C++ if you try this.
     ## References are still not implemented correctly.
-    # cdef TestClass &rT = T
+    # cdef TestClass_ &rT = T
     
     # either
     T.x = 15
@@ -112,8 +112,8 @@ def test_with_raii():
     ## syntax or something similar, which will solve many of 
     ## the problems metioned above:  
     #
-    #  cdef TestClass *T
-    #  with new TestClass() as T:
+    #  cdef TestClass_ *T
+    #  with new TestClass_() as T:
     #     T.x = 15
     #     print(T.x)
     #

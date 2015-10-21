@@ -2,40 +2,40 @@
 # distutils: language = c++
 
 
-from testclass cimport TestClass
+from testclass cimport TestClass as TestClass_
 
 
-cdef class PyTestClass:
+cdef class TestClass:
 
     """ 
     Cython wrapper class for C++ class TestClass
     """
 
     cdef:
-        TestClass *_thisptr
+        TestClass_ *_thisptr
 
-    def __cinit__(PyTestClass self):
+    def __cinit__(TestClass self):
         # Initialize the "this pointer" to NULL so __dealloc__
         # knows if there is something to deallocate. Do not 
         # call new TestClass() here.
         self._thisptr = NULL
         
-    def __init__(PyTestClass self):
+    def __init__(TestClass self):
         # Constructing the C++ object might raise std::bad_alloc
         # which is automatically converted to a Python MemoryError
         # by Cython. We therefore need to call "new TestClass()" in
         # __init__ instead of __cinit__.
-        self._thisptr = new TestClass() 
+        self._thisptr = new TestClass_() 
 
-    def __dealloc__(PyTestClass self):
+    def __dealloc__(TestClass self):
         # Only call del if the C++ object is alive, 
         # or we will get a segfault.
         if self._thisptr != NULL:
             del self._thisptr
             
-    cdef int _check_alive(PyTestClass self) except -1:
+    cdef int _check_alive(TestClass self) except -1:
         # Beacuse of the context manager protocol, the C++ object
-        # might die before PyTestClass self is reclaimed.
+        # might die before TestClass self is reclaimed.
         # We therefore need a small utility to check for the
         # availability of self._thisptr
         if self._thisptr == NULL:
@@ -48,11 +48,11 @@ cdef class PyTestClass:
         # Here we use a property to expose the public member
         # x of TestClass to Python
         
-        def __get__(PyTestClass self):
+        def __get__(TestClass self):
             self._check_alive()
             return self._thisptr.x
         
-        def __set__(PyTestClass self, value):
+        def __set__(TestClass self, value):
             self._check_alive()
             self._thisptr.x = <int> value
 
@@ -61,16 +61,16 @@ cdef class PyTestClass:
         # Here we use a property to expose the public member
         # y of TestClass to Python
     
-        def __get__(PyTestClass self):
+        def __get__(TestClass self):
             self._check_alive()
             return self._thisptr.y
     
-        def __set__(PyTestClass self, value):
+        def __set__(TestClass self, value):
             self._check_alive()
             self._thisptr.y = <int> value
             
             
-    def Multiply(PyTestClass self, int a, int b):
+    def Multiply(TestClass self, int a, int b):
         self._check_alive()
         return self._thisptr.Multiply(a,b)
             
@@ -80,11 +80,11 @@ cdef class PyTestClass:
     # is called deterministically and independently of 
     # the Python garbage collection.
 
-    def __enter__(PyTestClass self):
+    def __enter__(TestClass self):
         self._check_alive()
         return self
     
-    def __exit__(PyTestClass self, exc_tp, exc_val, exc_tb):
+    def __exit__(TestClass self, exc_tp, exc_val, exc_tb):
         if self._thisptr != NULL:
             del self._thisptr 
             self._thisptr = NULL # inform __dealloc__
